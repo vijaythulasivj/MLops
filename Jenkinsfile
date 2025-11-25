@@ -1,39 +1,51 @@
 pipeline {
-  agent any
-  stages {
-    stage('Checkout') {
-      steps { checkout scm }
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps { checkout scm }
+        }
+
+        stage('Install') {
+            steps {
+                bat 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Pull Data/Model') {
+            steps {
+                bat 'dvc pull'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'pytest'
+            }
+        }
+
+        stage('Build Docker') {
+            steps {
+                bat 'docker build -t housing-model-api .'
+            }
+        }
+
+        stage('Push Docker') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-pass',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+
+                    bat """
+                    echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+                    docker tag housing-model-api %DOCKER_USERNAME%/housing-model-api:latest
+                    docker push %DOCKER_USERNAME%/housing-model-api:latest
+                    """
+                }
+            }
+        }
     }
-    stage('Install') {
-      steps {
-        sh 'pip install -r requirements.txt'
-      }
-    }
-    stage('Pull Data/Model') {
-      steps {
-        sh 'dvc pull'
-      }
-    }
-    stage('Test') {
-      steps {
-        sh 'pytest'
-      }
-    }
-    stage('Build Docker') {
-      steps {
-        sh 'docker build -t housing-model-api .'
-      }
-    }
-    stage('Push Docker') {
-      steps {
-        sh 'docker tag housing-model-api thulasiram927/housing-model-api:latest'
-        sh 'docker push thulasiram927/housing-model-api:latest'
-      }
-    }
-    stage('Deploy') {
-      steps {
-        sh './deploy.sh'
-      }
-    }
-  }
 }
