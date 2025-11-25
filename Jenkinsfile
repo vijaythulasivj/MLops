@@ -26,19 +26,19 @@ pipeline {
                 }
             }
         }
-        /*
 
         stage('Pull Data/Model') {
             steps {
                 withEnv([
-                    "PATH=C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;" + 
+                    "PATH=C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\Wbem;" +
+                    "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;" +
                     "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;%PATH%"
                 ]) {
                     bat 'dvc pull'
                 }
             }
         }
-
+        /*
         stage('Test') {
             steps {
                 withEnv([
