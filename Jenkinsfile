@@ -10,13 +10,13 @@ pipeline {
         stage('Install') {
             steps {
                 withEnv([
-                    "PATH=C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;" + 
-                    "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;%PATH%"
+                    "PATH=%PATH%;C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313\\Scripts"
                 ]) {
                     bat 'pip install -r requirements.txt'
                 }
             }
         }
+        /*
 
         stage('Pull Data/Model') {
             steps {
@@ -62,5 +62,6 @@ pipeline {
                 }
             }
         }
+        */
     }
 }
