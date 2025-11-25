@@ -1,7 +1,3 @@
-hows that cmd.exe is not being recognized. Your Jenkins is running as the SYSTEM user, and in that context, some system paths like C:\Windows\System32 may not be fully accessible. This is why even basic commands like cmd or pip are failing, resulting in exit code 9009.
-
-To fix this, you need to explicitly include C:\Windows\System32 at the start of your PATH in withEnv, and also make sure the Python paths are correct. Here’s an updated pipeline snippet with an enhanced debug step and corrected PATH setup:
-
 pipeline {
     agent any
 
