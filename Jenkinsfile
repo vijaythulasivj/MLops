@@ -3,6 +3,12 @@ pipeline {
 
     stages {
 
+        stage('Debug PATH') {
+            steps {
+                bat 'echo %PATH%'
+            }
+        }
+
         stage('Checkout') {
             steps { checkout scm }
         }
