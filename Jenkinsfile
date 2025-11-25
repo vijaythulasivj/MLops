@@ -1,71 +1,39 @@
 pipeline {
-    agent any
-
-    environment {
-        // Your Docker Hub username
-        DOCKERHUB_USER = "YOUR_DOCKER_USERNAME"
-        IMAGE_NAME = "mlops-app"
+  agent any
+  stages {
+    stage('Checkout') {
+      steps { checkout scm }
     }
-
-    stages {
-
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                sh '''
-                    pip install -r requirements.txt
-                '''
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh '''
-                    pytest
-                '''
-            }
-        }
-
-        stage('DVC Pull / Reproduce') {
-            steps {
-                sh '''
-                    dvc pull
-                    dvc repro
-                '''
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh '''
-                    docker build -t $DOCKERHUB_USER/$IMAGE_NAME:latest .
-                '''
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKERHUB_PASS')]) {
-                    sh '''
-                        echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-                        docker push $DOCKERHUB_USER/$IMAGE_NAME:latest
-                    '''
-                }
-            }
-        }
+    stage('Install') {
+      steps {
+        sh 'pip install -r requirements.txt'
+      }
     }
-
-    post {
-        success {
-            echo "Pipeline completed successfully!"
-        }
-        failure {
-            echo "Pipeline failed!"
-        }
+    stage('Pull Data/Model') {
+      steps {
+        sh 'dvc pull'
+      }
     }
+    stage('Test') {
+      steps {
+        sh 'pytest'
+      }
+    }
+    stage('Build Docker') {
+      steps {
+        sh 'docker build -t housing-model-api .'
+      }
+    }
+    stage('Push Docker') {
+      steps {
+        sh 'docker tag housing-model-api thulasiram927/housing-model-api:latest'
+        sh 'docker push thulasiram927/housing-model-api:latest'
+      }
+    }
+    stage('Deploy') {
+      steps {
+        sh './deploy.sh'
+      }
+    }
+  }
 }
