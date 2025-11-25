@@ -9,7 +9,8 @@ pipeline {
 
         stage('Install') {
             steps {
-                bat 'pip install -r requirements.txt'
+                withEnv(["PATH=C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;%PATH%"]) {
+                    bat 'pip install -r requirements.txt'
             }
         }
 
