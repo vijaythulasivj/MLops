@@ -38,24 +38,25 @@ pipeline {
                 }
             }
         }
-        /*
+        
         stage('Test') {
             steps {
                 withEnv([
-                    "PATH=C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;" + 
+                    "PATH=C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\Wbem;" +
+                    "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;" +
                     "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;%PATH%"
                 ]) {
                     bat 'pytest'
                 }
             }
         }
-
+        
         stage('Build Docker') {
             steps {
                 bat 'docker build -t housing-model-api .'
             }
         }
-
+        /*
         stage('Push Docker') {
             steps {
                 withCredentials([usernamePassword(
