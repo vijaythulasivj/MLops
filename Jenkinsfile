@@ -1,71 +1,77 @@
 pipeline {
     agent any
 
-    environment {
-        // Your Docker Hub username
-        DOCKERHUB_USER = "YOUR_DOCKER_USERNAME"
-        IMAGE_NAME = "mlops-app"
-    }
-
     stages {
 
+        stage('Debug Environment') {
+            steps {
+                bat 'echo Current user: %USERNAME%'
+                bat 'where cmd'
+                bat 'echo %PATH%'
+            }
+        }
+
         stage('Checkout') {
-            steps {
-                checkout scm
-            }
+            steps { checkout scm }
         }
 
-        stage('Install Dependencies') {
+        stage('Install') {
             steps {
-                sh '''
-                    pip install -r requirements.txt
-                '''
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh '''
-                    pytest
-                '''
-            }
-        }
-
-        stage('DVC Pull / Reproduce') {
-            steps {
-                sh '''
-                    dvc pull
-                    dvc repro
-                '''
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh '''
-                    docker build -t $DOCKERHUB_USER/$IMAGE_NAME:latest .
-                '''
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKERHUB_PASS')]) {
-                    sh '''
-                        echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-                        docker push $DOCKERHUB_USER/$IMAGE_NAME:latest
-                    '''
+                withEnv([
+                    "PATH=C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\Wbem;" +
+                    "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;" +
+                    "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;%PATH%"
+                ]) {
+                    bat 'pip install -r requirements.txt'
                 }
             }
         }
-    }
 
-    post {
-        success {
-            echo "Pipeline completed successfully!"
+        stage('Pull Data/Model') {
+            steps {
+                withEnv([
+                    "PATH=C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\Wbem;" +
+                    "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;" +
+                    "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;%PATH%"
+                ]) {
+                    bat 'dvc pull'
+                }
+            }
         }
-        failure {
-            echo "Pipeline failed!"
+        /*
+        stage('Test') {
+            steps {
+                withEnv([
+                    "PATH=C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;" + 
+                    "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;%PATH%"
+                ]) {
+                    bat 'pytest'
+                }
+            }
         }
+
+        stage('Build Docker') {
+            steps {
+                bat 'docker build -t housing-model-api .'
+            }
+        }
+
+        stage('Push Docker') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-pass',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+
+                    bat """
+                    echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+                    docker tag housing-model-api %DOCKER_USERNAME%/housing-model-api:latest
+                    docker push %DOCKER_USERNAME%/housing-model-api:latest
+                    """
+                }
+            }
+        }
+        */
     }
 }
