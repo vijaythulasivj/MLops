@@ -58,7 +58,7 @@ pipeline {
                 bat 'docker build -t housing-model-api .'
             }
         }
-        /*
+    
         stage('Push Docker') {
             steps {
                 withCredentials([usernamePassword(
@@ -69,12 +69,11 @@ pipeline {
 
                     bat """
                     echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
-                    docker tag housing-model-api %DOCKER_USERNAME%/housing-model-api:latest
-                    docker push %DOCKER_USERNAME%/housing-model-api:latest
+                    docker tag housing-model-api %DOCKER_USERNAME%/housing-model-api:new
+                    docker push %DOCKER_USERNAME%/housing-model-api:new
                     """
                 }
             }
         }
-        */
     }
 }
