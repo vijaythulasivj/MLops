@@ -46,6 +46,8 @@ pipeline {
                     "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313;" +
                     "C:\\Users\\tsi082\\AppData\\Local\\Programs\\Python\\Python313\\Scripts;%PATH%"
                 ]) {
+                    bat "pip show pytest"
+                    bat "where pytest"
                     bat 'pytest'
                 }
             }
