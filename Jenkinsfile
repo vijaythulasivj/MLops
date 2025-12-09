@@ -48,7 +48,7 @@ pipeline {
                 ]) {
                     bat "pip show pytest"
                     bat "where pytest"
-                    bat 'pytest'
+                    bat 'python -m pytest'
                 }
             }
         }
